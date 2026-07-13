@@ -156,6 +156,7 @@
           <option value="entrance">Move-in: soonest</option>
         </select>
       </div>
+      <button class="reset" id="export">⭳ Export CSV</button>
       <button class="reset" id="reset">Reset</button>
     </div>
     <div class="count-line"><b id="count">–</b><span id="count-sub"></span></div>
@@ -218,6 +219,16 @@ $('#reset').onclick=()=>{state.cities.clear();state.rooms.clear();state.musts.cl
   document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
   $('#f-pmin').value='';$('#f-pmax').value='';$('#f-sort').value='match';render();};
 
+$('#export').onclick=()=>{
+  const cols=['Address','City','Price','Rooms','Floor','Size_sqm','Type','Condition','Parking_spots','Balconies','Mamad','Building_shelter','Storage','Elevator','AC','Accessible','Renovated','Air_directions','Building_total_floors','Entrance_date','Date_flexible','URL'];
+  const esc=v=>{v=(v==null?'':String(v));return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const lines=[cols.join(',')].concat(lastRows.map(r=>cols.map(c=>esc(r[c])).join(',')));
+  const csv='﻿'+lines.join('\r\n');
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='apartments_filtered.csv';a.click();
+};
+
 function passes(d){
   if(state.cities.size && !state.cities.has(d.City)) return false;
   if(state.rooms.size && !state.rooms.has(String(d._rooms))) return false;
@@ -269,9 +280,11 @@ function card(d){
   </article>`;
 }
 
+let lastRows=DATA;
 function render(){
   let rows=DATA.filter(passes);
   rows.sort(SORTERS[state.sort]);
+  lastRows=rows;
   $('#grid').innerHTML = rows.length ? rows.map(card).join('')
     : '<div class="empty">No listings match these filters. Loosen a must-have or widen the price range.</div>';
   $('#count').textContent=rows.length+' listing'+(rows.length===1?'':'s');
