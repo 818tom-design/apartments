@@ -192,7 +192,7 @@ DATA.forEach(d=>{
   d._score=(d._mamad?2:0)+(d._elev?1:0)+(d._park>=2?2:0)+(d._stor?1:0)+(d._boutique?1:0)+(d._balc>0?1:0);
 });
 
-const CITIES=['Ramat Gan','Givatayim','Rishon LeZion','Holon','Bat Yam'];
+const CITIES=['Ramat Gan','Givatayim','Rishon LeZion','Holon','Bat Yam'].filter(c=>DATA.some(d=>d.City===c));
 const MUSTS=[
   {k:'mamad',label:'ממ"ד',test:d=>d._mamad},
   {k:'elev',label:'Elevator',test:d=>d._elev},
